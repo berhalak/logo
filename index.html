@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Speech recognition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+  <script src="https://unpkg.com/grainjs@1.0.2/dist/grain-full.min.js"></script>
+
+  <dom id="root"></dom>
+
+
+  <script>
+
+    const {dom, obsArray, computed, observable, styled, MultiHolder} = grainjs;
+
+    let words = ['fasola', 'samolot', 'medal', 'balkon', 'mleko', 'telefon', 'naleśnik', 'motyl',
+      'chleb', 'plecy', 'lalka', 'kalosze', 'fotel', 'plama', 'cebula', 'węgiel', 'wafel', 'butelka', 'klamka',
+      'koszulka'
+    ];
+
+    // words = ['lody', 'lama', 'lalka', 'limonka', 'lemoniada', 'lubi', 'lila', 'lis', 'leon', 'luiza'];
+
+    dom.update(document.getElementById("root"),
+      dom('div',
+        dom.forEach(words, word => {
+          const result = observable('');
+          const progress = observable(false);
+          const recognition = new webkitSpeechRecognition();
+          recognition.lang = 'pl-PL';
+          recognition.onresult = async function(event) {
+            if (event.results.length > 0) {
+              result.set(event.results[0][0].transcript);
+            }
+          };
+          recognition.onend = () => {
+            progress.set(false);
+          };
+          const isOk = computed(u => word == u(result)?.toLowerCase().trim());
+
+          return dom('div.flex',
+            dom('div.word', word),
+            dom('div.result', dom.text(result),
+
+              dom.style('background', u => u(isOk) ? 'green' : 'red')
+
+            ),
+            dom.maybe(isOk, () => dom('div.ok', 'TAK')),
+            dom.maybe(use => !use(isOk), () => dom('div.ok', 'NIE')),
+            dom('button', 'start',
+              dom.style('background', u => u(progress) ? 'gray' : ''),
+              dom.style('padding', '20px')
+            ),
+
+            dom.on('click', () => {
+              if (progress.get()) {
+                recognition.stop();
+                return;
+              }
+              progress.set(true);
+              recognition.start();
+            })
+          );
+        })
+      )
+    );
+
+  </script>
+
+
+  <style>
+    body {
+      font-size: 20px;
+      user-select: none;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .word {
+      width: 100px;
+      border: 1px solid black;
+      padding: 10px;
+    }
+
+    .result {
+      width: 100px;
+      border: 1px solid black;
+      padding: 10px;
+    }
+
+    .ok {
+      width: 100px;
+      border: 1px solid black;
+      padding: 10px;
+    }
+  </style>
+</body>
+
+</html>
