@@ -19,19 +19,31 @@
     const {dom, obsArray, computed, observable, styled, MultiHolder} = grainjs;
 
     let words = ['fasola', 'samolot', 'medal', 'balkon', 'mleko', 'telefon', 'naleśnik', 'motyl',
-      'chleb', 'plecy', 'lalka', 'kalosze', 'fotel', 'plama', 'cebula', 'węgiel', 'wafel', 'butelka', 'klamka',
-      'koszulka'
+      'chleb', 'plecy', 'lalka', 'kalosze', 'fotel', 'plama', 'cebula', 'wafel', 'butelka', 'klamka',
+      'koszulka', 
     ];
+
+    words = [
+      'ulgowy bilet',
+      'wielka lokomotywa',
+      'metalowy widelec',
+      'zapalona lampa',
+      'leniwy bolek',
+      'malutki motylek',
+      'ulgowy bilet',
+      'chleb',
+      'fasola', 'samolot', 'medal', 'balkon', 'mleko', 'telefon',
+    ]
 
     // words = ['lody', 'lama', 'lalka', 'limonka', 'lemoniada', 'lubi', 'lila', 'lis', 'leon', 'luiza'];
 
     dom.update(document.getElementById("root"),
-      dom('div',
+      dom('div.list',
         dom.forEach(words, word => {
           const result = observable('');
           const progress = observable(false);
           const recognition = new webkitSpeechRecognition();
-          recognition.lang = 'pl-PL';
+          // recognition.lang = 'pl-PL';
           recognition.onresult = async function(event) {
             if (event.results.length > 0) {
               result.set(event.results[0][0].transcript);
@@ -98,6 +110,13 @@
       width: 100px;
       border: 1px solid black;
       padding: 10px;
+    }
+    .list {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      max-height: 100vh;
+      row-gap: 10px;
     }
   </style>
 </body>
